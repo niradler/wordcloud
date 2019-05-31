@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Wordcloud</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.js"></script>
+</head>
+
+<body style="display: flex;justify-content: center;">
+    <script>
+        async function init() {
+            const data = !!;
+            const highestScore = Math.max(...data.map(x => x.size));
+            const rotateAngle = 90;
+            let layout = d3.layout
+                .cloud()
+                .size([800, 800])
+                .words(data)
+                .rotate(() => ~~(Math.random() * 2) * rotateAngle)
+                .font("Impact")
+                .fontSize(d => (d.size / highestScore) * rotateAngle)
+                .on("end", draw);
+            layout.start();
+
+            function draw(words) {
+                d3.select("body")
+                    .append("svg")
+                    .attr("width", layout.size()[0])
+                    .attr("height", layout.size()[1])
+                    .append("g")
+                    .attr(
+                        "transform", `translate(${layout.size()[0] / 2.3},${layout.size()[1] / 2.3})`)
+                    .selectAll("text")
+                    .data(words)
+                    .enter()
+                    .append("text")
+                    .style("font-size", d => d.size + "px")
+                    .style("font-family", "Impact")
+                    .attr("text-anchor", "middle")
+                    .attr(
+                        "transform",
+                        d => `translate(${[d.x, d.y]})rotate(${d.rotate})`
+                    )
+                    .text(d => d.text);
+            }
+        }
+        init();
+    </script>
+</body>
+
+</html>
